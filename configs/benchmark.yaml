@@ -1,0 +1,51 @@
+run_name: tent-fidelity
+output_root: outputs/benchmarks
+images_per_scenario: 3
+seeds: [42, 137, 2026]
+width: 1024
+height: 1024
+local_model: flux2-klein-4b
+local_quantization: 8
+local_steps: 4
+local_guidance: 1.0
+adapter_path: outputs/adapters/tent.safetensors
+adapter_strength: 1.0
+reference_image: data/tent/test/reference.jpg
+remote:
+  endpoint: https://api.bfl.ai/v1/flux-2-pro
+  api_key_env: BFL_API_KEY
+  cost_per_output_megapixel: 0.03
+  cost_per_input_megapixel: 0.015
+scenarios:
+  - id: different-background
+    prompt: "Product photograph of zkttent pitched on a black volcanic beach, accurate construction and colors"
+  - id: different-lighting
+    prompt: "Product photograph of zkttent at blue hour, soft lantern light, accurate construction and colors"
+  - id: different-angle
+    prompt: "Three-quarter rear view of zkttent, accurate construction, seams, poles, and colors"
+  - id: product-in-use
+    prompt: "Two hikers using zkttent at a mountain campsite, accurate product construction and colors"
+  - id: creative-advertising
+    prompt: "Premium outdoor advertising composition featuring zkttent on a dramatic rocky ridge, accurate product"
+configurations:
+  - id: local-text
+    backend: local
+    reference: false
+    lora: false
+  - id: local-reference
+    backend: local
+    reference: true
+    lora: false
+  - id: local-lora
+    backend: local
+    reference: false
+    lora: true
+  - id: local-reference-lora
+    backend: local
+    reference: true
+    lora: true
+  - id: flux2-pro-reference
+    backend: remote
+    reference: true
+    lora: false
+

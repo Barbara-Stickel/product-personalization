@@ -1,0 +1,30 @@
+model:
+  name: flux2-klein-base-4b
+  quantization: 8
+dataset:
+  path: data/tent/train
+  product_identifier: zkttent
+lora:
+  rank: 16
+  alpha: 16  # MFLUX 0.24 requires alpha == rank (effective scale 1.0).
+optimizer:
+  name: AdamW
+  learning_rate: 0.0001
+training:
+  training_steps: 1200
+  batch_size: 1
+  denoising_steps: 40
+  guidance: 1.0
+  max_resolution: 768
+  seed: 42
+  timestep_low: 25
+  timestep_high: 40
+  gradient_checkpointing: true
+  low_ram: true
+checkpoint:
+  frequency: 25
+monitoring:
+  plot_frequency: 20
+  generate_image_frequency: 20
+output_root: outputs/training
+

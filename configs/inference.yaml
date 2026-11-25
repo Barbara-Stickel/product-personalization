@@ -1,0 +1,15 @@
+backend: local
+model:
+  name: flux2-klein-4b
+  quantization: 8
+prompt: "A documentary product photograph of zkttent pitched beside a calm alpine lake"
+reference_images: []
+adapter_path: null
+adapter_strength: 1.0
+width: 1024
+height: 1024
+steps: 4
+guidance: 1.0
+seeds: [42]
+output_root: outputs/generations
+
