@@ -1,0 +1,33 @@
+model:
+  name: flux2-klein-base-4b
+  model_path: mflux-community/flux-2-klein-base-4b-mflux-q4
+  quantization: null  # Use the quantization already stored in the checkpoint.
+dataset:
+  path: data/tent/train
+  product_identifier: zkttent
+lora:
+  rank: 8
+  alpha: 8
+optimizer:
+  name: AdamW
+  learning_rate: 0.0001
+training:
+  training_steps: 240  # Ten epochs with the current 24 training photos.
+  batch_size: 1
+  denoising_steps: 40
+  guidance: 1.0
+  max_resolution: 512
+  seed: 42
+  timestep_low: 25
+  timestep_high: 40
+  gradient_checkpointing: true
+  low_ram: true
+  cache_limit_gb: 0.5
+checkpoint:
+  frequency: 24  # Save once per epoch.
+monitoring:
+  plot_frequency: 24
+  generate_image_frequency: 48
+  preview_width: 512
+  preview_height: 512
+output_root: outputs/training

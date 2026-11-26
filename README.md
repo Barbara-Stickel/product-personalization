@@ -61,10 +61,10 @@ Every adjustable training value is in `configs/training.yaml`. `training_steps` 
 uv run product-lora train --config configs/training.yaml
 ```
 
-Outputs are isolated under `outputs/training/train-<timestamp>/`. MFLUX writes checkpoint ZIPs, preview images, and an HTML loss plot there; the wrapper also captures the training log, extracts `adapter.safetensors` and `loss-history.json` from the final checkpoint, and copies the adapter to `outputs/adapters/<run-id>.safetensors`. A checkpoint is resumable with MFLUX directly:
+Outputs are isolated under `outputs/training/train-<timestamp>/`. MFLUX writes checkpoint ZIPs, preview images, and an HTML loss plot in the run's `mflux/` subdirectory. The wrapper captures the training log, extracts `adapter.safetensors` and `loss-history.json` from the final checkpoint, and copies the adapter to `outputs/adapters/<run-id>.safetensors`. Resume a checkpoint with MFLUX directly.
 
 ```bash
-uv run mflux-train --resume outputs/training/<run>/checkpoints/<checkpoint>.zip
+uv run mflux-train --resume outputs/training/<run>/mflux/checkpoints/<checkpoint>.zip
 ```
 
 Loss is useful for diagnosing instability, but choose a checkpoint using held-out visual samples; the lowest loss can be overfit.

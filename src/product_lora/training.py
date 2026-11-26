@@ -59,12 +59,14 @@ def build_mflux_config(
     )
     return {
         "model": config.model.name,
+        "model_path": config.model.model_path,
         "data": str(config.dataset.path.resolve()),
         "seed": config.training.seed,
         "steps": config.training.denoising_steps,
         "guidance": config.training.guidance,
         "quantize": config.model.quantization,
         "low_ram": config.training.low_ram,
+        "cache_limit_gb": config.training.cache_limit_gb,
         "gradient_checkpointing": config.training.gradient_checkpointing,
         "max_resolution": config.training.max_resolution,
         "training_loop": {
@@ -78,12 +80,15 @@ def build_mflux_config(
             "learning_rate": config.optimizer.learning_rate,
         },
         "checkpoint": {
-            "output_path": str(run_dir.resolve()),
+            # MFLUX appends a timestamp if its output path already exists.
+            "output_path": str((run_dir / "mflux").resolve()),
             "save_frequency": config.checkpoint.frequency,
         },
         "monitoring": {
             "plot_frequency": config.monitoring.plot_frequency,
             "generate_image_frequency": config.monitoring.generate_image_frequency,
+            "preview_width": config.monitoring.preview_width,
+            "preview_height": config.monitoring.preview_height,
         },
         "lora_layers": {"targets": targets},
     }
@@ -121,7 +126,7 @@ def train(config: TrainingConfig, source_config: Path) -> str:
             stdout=log_file,
             stderr=subprocess.STDOUT,
         )
-    _export_final_adapter(run_dir, run_id)
+    _export_final_adapter(run_dir, run_id, checkpoint_dir=run_dir / "mflux" / "checkpoints")
     return run_id
 
 
@@ -129,10 +134,12 @@ def _run_id(prefix: str) -> str:
     return f"{prefix}-{datetime.now(UTC).strftime('%Y%m%dT%H%M%SZ')}"
 
 
-def _export_final_adapter(run_dir: Path, run_id: str) -> None:
-    checkpoints = sorted((run_dir / "checkpoints").glob("*_checkpoint.zip"))
+def _export_final_adapter(run_dir: Path, run_id: str, *, checkpoint_dir: Path) -> None:
+    checkpoints = sorted(checkpoint_dir.glob("*_checkpoint.zip"))
     if not checkpoints:
-        raise RuntimeError("MFLUX completed without writing a checkpoint")
+        raise RuntimeError(
+            f"No MFLUX checkpoints found in {checkpoint_dir}. See {run_dir / 'training.log'}."
+        )
     with zipfile.ZipFile(checkpoints[-1]) as archive:
         checkpoint = json.loads(archive.read("checkpoint.json"))
         adapter_member = checkpoint["files"]["lora_adapter"]

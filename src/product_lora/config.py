@@ -14,6 +14,10 @@ class ModelSettings(BaseModel):
     quantization: int | None = Field(default=None, ge=3, le=8)
 
 
+class TrainingModelSettings(ModelSettings):
+    model_path: str | None = Field(default=None, min_length=1)
+
+
 class DatasetSettings(BaseModel):
     path: Path
     product_identifier: str = Field(min_length=3, pattern=r"^[A-Za-z0-9_-]+$")
@@ -40,6 +44,7 @@ class TrainingLoopSettings(BaseModel):
     timestep_high: int = Field(gt=0)
     gradient_checkpointing: bool = True
     low_ram: bool = True
+    cache_limit_gb: float | None = Field(default=None, gt=0)
 
 
 class CheckpointSettings(BaseModel):
@@ -49,10 +54,12 @@ class CheckpointSettings(BaseModel):
 class MonitoringSettings(BaseModel):
     plot_frequency: int = Field(gt=0)
     generate_image_frequency: int = Field(gt=0)
+    preview_width: int = Field(default=1024, gt=0)
+    preview_height: int = Field(default=1024, gt=0)
 
 
 class TrainingConfig(BaseModel):
-    model: ModelSettings
+    model: TrainingModelSettings
     dataset: DatasetSettings
     lora: LoraSettings
     optimizer: OptimizerSettings
@@ -74,13 +81,19 @@ class TrainingConfig(BaseModel):
         return self
 
 
+class InferenceModelSettings(ModelSettings):
+    base_model: str | None = Field(default=None, min_length=1)
+
+
 class InferenceConfig(BaseModel):
     backend: Literal["local"] = "local"
-    model: ModelSettings
+    model: InferenceModelSettings
     prompt: str = Field(min_length=1)
     reference_images: list[Path] = []
     adapter_path: Path | None = None
     adapter_strength: float = Field(default=1.0, ge=0)
+    bake_lora: bool = True
+    low_ram: bool = False
     width: int = Field(gt=0)
     height: int = Field(gt=0)
     steps: int = Field(gt=0)

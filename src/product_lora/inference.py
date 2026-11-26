@@ -12,7 +12,13 @@ def generate(config: InferenceConfig) -> str:
     run_id = f"generate-{datetime.now(UTC).strftime('%Y%m%dT%H%M%SZ')}"
     run_dir = config.output_root / run_id
     run_dir.mkdir(parents=True, exist_ok=False)
-    generator = MfluxGenerator(config.model.name, config.model.quantization)
+    generator = MfluxGenerator(
+        config.model.name,
+        config.model.quantization,
+        base_model=config.model.base_model,
+        bake_lora=config.bake_lora,
+        low_ram=config.low_ram,
+    )
     records = []
     for index, seed in enumerate(config.seeds, start=1):
         output = run_dir / f"image-{index:02d}-seed-{seed}.png"

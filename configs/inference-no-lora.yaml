@@ -1,0 +1,16 @@
+backend: local
+model:
+  name: mflux-community/flux-2-klein-base-4b-mflux-q4
+  base_model: flux2-klein-base-4b
+  quantization: null  # Use the checkpoint's stored 4-bit weights.
+prompt:  "Product photograph of a camping tent three-quarter view"
+reference_images: []
+adapter_path: null
+low_ram: true
+width: 512
+height: 512
+steps: 20
+guidance: 1.0
+seeds: [42]
+output_root: outputs/generations
+

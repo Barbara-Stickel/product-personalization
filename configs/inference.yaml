@@ -1,14 +1,17 @@
 backend: local
 model:
-  name: flux2-klein-4b
-  quantization: 8
-prompt: "A documentary product photograph of zkttent pitched beside a calm alpine lake"
+  name: mflux-community/flux-2-klein-base-4b-mflux-q4
+  base_model: flux2-klein-base-4b
+  quantization: null  # Use the checkpoint's stored 4-bit weights.
+prompt: "Product photograph of zkttent three-quarter view"
 reference_images: []
-adapter_path: null
+adapter_path: outputs/adapters/train-20261125T231845Z.safetensors
 adapter_strength: 1.0
-width: 1024
-height: 1024
-steps: 4
+bake_lora: false
+low_ram: true
+width: 512
+height: 512
+steps: 20
 guidance: 1.0
 seeds: [42]
 output_root: outputs/generations
